@@ -12,6 +12,12 @@ const getItems = (req, res) => {
   .then((items) => res.status(200).send(items))
   .catch((err) => {
     // console.error(err);
+    if (err.name === 'DocumentNotFoundError') {
+      return res.status(notFoundError).send({message: err.message});
+    }
+    if (err.name === "CastError") {
+      return res.status(invalidDataError).send({message: err.message});
+    }
     return res.status(serverError).send({message: err.message});
   })
 }

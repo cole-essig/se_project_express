@@ -12,6 +12,12 @@ const getUsers = (req, res) => {
   .then((users) => res.status(200).send(users))
   .catch((err) => {
     // console.error(err);
+    if (err.name === 'DocumentNotFoundError') {
+      return res.status(notFoundError).send({message: err.message});
+    }
+    if (err.name === "CastError") {
+      return res.status(invalidDataError).send({message: err.message});
+    }
     return res.status(serverError).send({message: err.message});
   })
 }
