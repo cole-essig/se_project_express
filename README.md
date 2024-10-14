@@ -1,5 +1,13 @@
 # WTWR (What to Wear?): Back End
-The back-end project is focused on creating a server for the WTWR application. You’ll gain a deeper understanding of how to work with databases, set up security and testing, and deploy web applications on a remote machine. The eventual goal is to create a server with an API and user authorization.
+This Project is the back end server side devolpement and REST API of the WTWR project and will be connected upon completion. You can see that project [here](https://github.com/cole-essig/se_project_react).
+This Project uses various tools and librairies to stay modern and be easy to use, such as:
+ - Express
+ - Mongoose
+ - Connects to a Mongo Compass Databases
+ - ESlint
+ - validator Package
+ - Postman
+It handles the routing, management and respones from the Database to give clear returns of information requested from the website, and appropriate errors when necessary. It handles users and clothing items that will be stored, retrieved or created upon interaction with the API itself. It has been rigourusly tested using Postman to configure proper responses and handling interaction from a website.
 ## Running the Project
 `npm run start` — to launch the server 
 
