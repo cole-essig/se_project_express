@@ -25,15 +25,18 @@ const clothingItemSchema = new mongoose.Schema({
       message: 'You must enter a valid URL',
     }
   },
-  // owner: {
-  //   owner: User._id
-  // },
-  // likes: {
-  //   likeBy: []
-  // },
-  // createdAt: {
-  //   date: Date.now()
-  // }
+  owner: {
+    required: true,
+    type: mongoose.Schema.Types.ObjectId
+  },
+  likes: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user'
+  },
+  createdAt: {
+    type: Date,
+    default: new Date()
+  }
 });
 
 const Clothingitem = mongoose.model('Clothingitem', clothingItemSchema);
