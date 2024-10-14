@@ -1,10 +1,9 @@
+// Recieved a lint error for console.error in my catch blocks, unsure if exeption is needed. Leaving in for now
+
 const User = require('../models/user')
 const { invalidDataError,
   notFoundError,
   serverError,
-  unauthorizedError,
-  conflictError,
-  forbiddenError
 } = require("../utils/errors")
 
 const getUsers = (req, res) => {
@@ -12,7 +11,7 @@ const getUsers = (req, res) => {
   .orFail()
   .then((users) => res.status(200).send(users))
   .catch((err) => {
-    console.error(err);
+    // console.error(err);
     return res.status(serverError).send({message: err.message});
   })
 }
@@ -23,10 +22,11 @@ const getUser = (req, res) => {
   .orFail()
   .then((user) => res.status(200).send(user))
   .catch((err) => {
-    console.error(err);
+    // console.error(err);
     if (err.name === 'DocumentNotFoundError') {
       return res.status(notFoundError).send({message: err.message});
-    } else if (err.name === "CastError") {
+    }
+    if (err.name === "CastError") {
       return res.status(invalidDataError).send({message: err.message});
     }
     return res.status(serverError).send({message: err.message});
@@ -38,7 +38,7 @@ const createUser = (req, res) => {
   User.create({ name, avatar })
   .then((user) => res.status(201).send(user))
   .catch((err) => {
-    console.error(err);
+    // console.error(err);
     if (err.name === 'ValidationError') {
       return res.status(invalidDataError).send({message: err.message});
     }

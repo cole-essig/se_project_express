@@ -1,10 +1,9 @@
+// Recieved a lint error for console.error in my catch blocks, unsure if exeption is needed. Leaving in for now
+
 const Clothingitem = require('../models/clothingitem');
 const { invalidDataError,
   notFoundError,
   serverError,
-  unauthorizedError,
-  conflictError,
-  forbiddenError
 } = require("../utils/errors")
 
 const getItems = (req, res) => {
@@ -12,7 +11,7 @@ const getItems = (req, res) => {
   .orFail()
   .then((items) => res.status(200).send(items))
   .catch((err) => {
-    console.error(err);
+    // console.error(err);
     return res.status(serverError).send({message: err.message});
   })
 }
@@ -23,7 +22,7 @@ const createItem = (req, res) => {
   Clothingitem.create({ name, weather, imageUrl, owner })
   .then((item) => res.status(201).send(item))
   .catch((err) => {
-    console.error(err);
+    // console.error(err);
     if (err.name === 'ValidationError') {
       return res.status(invalidDataError).send({message: err.message});
     }
@@ -37,10 +36,11 @@ const deleteItem = (req, res) => {
   .orFail()
   .then((item) => res.status(200).send(item))
   .catch((err) => {
-    console.error(err);
+    // console.error(err);
     if (err.name === 'DocumentNotFoundError') {
       return res.status(notFoundError).send({message: err.message});
-    } else if (err.name === "CastError") {
+    }
+    if (err.name === "CastError") {
       return res.status(invalidDataError).send({message: err.message});
     }
     return res.status(serverError).send({message: err.message});
@@ -57,10 +57,11 @@ const addLike = (req, res) => {
   .orFail()
   .then((item) => res.status(200).send(item))
   .catch((err) => {
-    console.error(err);
+    // console.error(err);
     if (err.name === 'DocumentNotFoundError') {
       return res.status(notFoundError).send({message: err.message});
-    } else if (err.name === "CastError") {
+    }
+    if (err.name === "CastError") {
       return res.status(invalidDataError).send({message: err.message});
     }
     return res.status(serverError).send({message: err.message});
@@ -77,10 +78,11 @@ const deleteLike = (req, res) => {
   .orFail()
   .then((item) => res.status(200).send(item))
   .catch((err) => {
-    console.error(err);
+    // console.error(err);
     if (err.name === 'DocumentNotFoundError') {
       return res.status(notFoundError).send({message: err.message});
-    } else if (err.name === "CastError") {
+    }
+    if (err.name === "CastError") {
       return res.status(invalidDataError).send({message: err.message});
     }
     return res.status(serverError).send({message: err.message});
