@@ -3,10 +3,10 @@ const validator = require('validator');
 
 const userSchema = new mongoose.Schema({
   name: {
-    type: String,
     required: true,
-    minlingth: 2,
-    maxlength: 30
+    type: String,
+    minlength: 2,
+    maxlength: 30,
   },
   avatar: {
     type: String,

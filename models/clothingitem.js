@@ -4,10 +4,10 @@ const User = require('./user');
 
 const clothingItemSchema = new mongoose.Schema({
   name: {
-    type: String,
     required: true,
-    minlingth: 2,
-    maxlength: 30
+    type: String,
+    minlength: 2,
+    maxlength: 30,
   },
   weather: {
     type: String,
