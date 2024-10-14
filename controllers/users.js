@@ -9,6 +9,7 @@ const { invalidDataError,
 
 const getUsers = (req, res) => {
   User.find({})
+  .orFail()
   .then((users) => res.status(200).send(users))
   .catch((err) => {
     console.error(err);
