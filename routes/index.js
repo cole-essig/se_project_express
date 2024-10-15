@@ -8,7 +8,7 @@ router.use('/users', userRouter);
 router.use('/items', itemRouter);
 router.use((req, res) => {
   res
-    .status(notExistingError)
+    .status(notFoundError)
     .send({ message: "Requested resource not found" });
 });
 
