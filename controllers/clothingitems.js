@@ -6,7 +6,7 @@ const { invalidDataError,
 
 const getItems = (req, res) => {
   Clothingitem.find({})
-  .then((items) => send(items))
+  .then((items) => res.send(items))
   .catch((err) => {
     console.error(err);
     return res.status(serverError).send({message: "An error has occurred on the server"});
@@ -17,7 +17,7 @@ const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
   const owner = req.user._id;
   Clothingitem.create({ name, weather, imageUrl, owner })
-  .then((item) => send(item))
+  .then((item) => res.send(item))
   .catch((err) => {
     console.error(err);
     if (err.name === 'ValidationError') {
@@ -31,7 +31,7 @@ const deleteItem = (req, res) => {
   const { itemId } = req.params;
   Clothingitem.findByIdAndDelete(itemId)
   .orFail()
-  .then((item) => send(item))
+  .then((item) => res.send(item))
   .catch((err) => {
     console.error(err);
     if (err.name === 'DocumentNotFoundError') {
@@ -52,7 +52,7 @@ const addLike = (req, res) => {
     { new: true },
   )
   .orFail()
-  .then((item) => send(item))
+  .then((item) => res.send(item))
   .catch((err) => {
     console.error(err);
     if (err.name === 'DocumentNotFoundError') {
@@ -73,7 +73,7 @@ const deleteLike = (req, res) => {
     { new: true },
   )
   .orFail()
-  .then((item) => send(item))
+  .then((item) => res.send(item))
   .catch((err) => {
     console.error(err);
     if (err.name === 'DocumentNotFoundError') {

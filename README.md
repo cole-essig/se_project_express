@@ -13,5 +13,7 @@ It handles the routing, management and respones from the Database to give clear 
 
 `npm run dev` — to launch the server with the hot reload feature
 
+Check package.json for additional scripts.
+
 ### Testing
 Before committing your code, make sure you edit the file `sprint.txt` in the root folder. The file `sprint.txt` should contain the number of the sprint you're currently working on. For ex. 12
