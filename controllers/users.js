@@ -2,7 +2,9 @@ const User = require('../models/user')
 const { invalidDataError,
   notFoundError,
   serverError,
-} = require("../utils/errors")
+} = require("../utils/errors");
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const getUsers = (req, res) => {
   User.find({})
@@ -31,16 +33,51 @@ const getUser = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { name, avatar } = req.body;
-  User.create({ name, avatar })
+  const { name, avatar, email, password } = req.body;
+  User.findOne({ email })
+  .then((user) => {
+    if (user) {
+      return res.status(invalidDataError).send({message: "User or Password already exist"});
+    }
+    User.create({ name, avatar, email, password })
+  bcrypt.hash(req.body.password, 10)
+    .then(hash => User.create({
+      name: req.body.name,
+      avatar: req.body.avatar,
+      email: req.body.email,
+      password: hash,
+    }))
+  })
   .then((user) => res.send(user))
   .catch((err) => {
     console.error(err);
     if (err.name === 'ValidationError') {
       return res.status(invalidDataError).send({message: "Invalid data"});
+    } else if (err.name === '11000') {
+      return res.status(invalidDataError).send({message: "User or Password already exist"});
     }
     return res.status(serverError).send({message: "An error has occurred on the server"});
   })
 };
 
-module.exports = { getUsers, getUser, createUser };
+const login = (req, res) => {
+  const {email, password} = req.body;
+  User.findUserByCredentials({email, password})
+  .then((user) => {
+    const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+      expiresIn: "7d",
+    });
+    res.send({token});
+  })
+  .catch((err) => {
+    console.err(err)
+    if (err.name === 'ValidationError') {
+      return res.status(invalidDataError).send({message: "Invalid data"});
+    } else if (err.name === '11000') {
+      return res.status(invalidDataError).send({message: "User or Password already exist"});
+    }
+    return res.status(serverError).send({message: "An error has occurred on the server"});
+  })
+}
+
+module.exports = { getUsers, getUser, createUser, login };
