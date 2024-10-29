@@ -37,7 +37,7 @@ const deleteItem = (req, res) => {
     if (user === item.owner) {
       return Clothingitem.findByIdAndDelete(item._id)
       .orFail()
-      .then((deletedItem) => res.send({deleteItem}))
+      .then((deletedItem) => res.send(deletedItem))
     }
     return res.status(unauthorizedError).send({message: "Item cannot be deleted"});
   })

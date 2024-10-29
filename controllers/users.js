@@ -1,7 +1,7 @@
-const User = require('../models/user')
-const { invalidDataError, notFoundError, serverError } = require("../utils/errors");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const User = require('../models/user')
+const { invalidDataError, notFoundError, serverError } = require("../utils/errors");
 const { JWT_SECRET } = require('../utils/config')
 
 const getUsers = (req, res) => {
@@ -51,7 +51,7 @@ const createUser = (req, res) => {
     console.error(err);
     if (err.name === 'ValidationError') {
       return res.status(invalidDataError).send({message: "Invalid data"});
-    } else if (err.name === '11000') {
+    } if (err.name === '11000') {
       return res.status(invalidDataError).send({message: "User or Password already exist"});
     }
     return res.status(serverError).send({message: "An error has occurred on the server"});
@@ -71,7 +71,7 @@ const login = (req, res) => {
     console.err(err)
     if (err.name === 'ValidationError') {
       return res.status(invalidDataError).send({message: "Invalid data"});
-    } else if (err.name === '11000') {
+    } if (err.name === '11000') {
       return res.status(invalidDataError).send({message: "User or Password already exist"});
     }
     return res.status(serverError).send({message: "An error has occurred on the server"});
