@@ -1,8 +1,5 @@
 const User = require('../models/user')
-const { invalidDataError,
-  notFoundError,
-  serverError,
-} = require("../utils/errors");
+const { invalidDataError, notFoundError, serverError } = require("../utils/errors");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../utils/config')
@@ -81,4 +78,45 @@ const login = (req, res) => {
   })
 }
 
-module.exports = { getUsers, getUser, createUser, login };
+const getCurrentUser = (req, res) => {
+  const id = req.user._id;
+  User.findById(id)
+  .then((user) => {
+    if (user) {
+      return res.send({ user });
+    }
+    return res.status(notFoundError);
+  })
+  .catch((err) => {
+    console.err(err);
+    if (err.name === notFoundError) {
+      return res.send({message: "User not found"})
+    }
+    return res.status(serverError).send({message: "An error has occurred on the server"});
+  })
+}
+
+const updateProfile = (req, res) => {
+  const { _id } = req.user;
+  const { name, avatar } = req.body;
+
+  User.findByIdAndUpdate(_id, { name, avatar }, { runValidators: true, new: true })
+  .then((user) => {
+    if (user) {
+      res.send({ user })
+    }
+    return res.status(notFoundError).send({message: "Not found"});
+  })
+  .catch((err) => {
+    console.err(err);
+    if (err.name === 'DocumentNotFoundError') {
+      return res.status(notFoundError).send({message: err.message});
+    }
+    if (err.name === "ValidationError") {
+      return res.status(invalidDataError).send({message: "Invalid data"});
+    }
+    return res.status(serverError).send({message: "An error has occurred on the server"});
+  })
+}
+
+module.exports = { getUsers, getUser, createUser, login, getCurrentUser, updateProfile };
