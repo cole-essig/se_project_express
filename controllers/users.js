@@ -5,6 +5,7 @@ const { invalidDataError,
 } = require("../utils/errors");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('../utils/config')
 
 const getUsers = (req, res) => {
   User.find({})
