@@ -2,6 +2,7 @@ const Clothingitem = require('../models/clothingitem');
 const { invalidDataError,
   notFoundError,
   serverError,
+  unauthorizedError,
 } = require("../utils/errors")
 
 const getItems = (req, res) => {
@@ -28,10 +29,18 @@ const createItem = (req, res) => {
 }
 
 const deleteItem = (req, res) => {
+  const user = req.user._id
   const { itemId } = req.params;
-  Clothingitem.findByIdAndDelete(itemId)
+  Clothingitem.findById(itemId)
   .orFail()
-  .then((item) => res.send(item))
+  .then((item) => {
+    if (user === item.owner) {
+      return Clothingitem.findByIdAndDelete(item._id)
+      .orFail()
+      .then((deletedItem) => res.send({deleteItem}))
+    }
+    return res.status(unauthorizedError).send({message: "Item cannot be deleted"});
+  })
   .catch((err) => {
     console.error(err);
     if (err.name === 'DocumentNotFoundError') {
