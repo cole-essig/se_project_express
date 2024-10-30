@@ -32,30 +32,25 @@ const getUser = (req, res) => {
 
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
+
   User.findOne({ email })
-  .then((user) => {
-    if (user) {
-      return res.status(invalidDataError).send({message: "User or Password already exist"});
-    }
-    User.create({ name, avatar, email, password })
-  bcrypt.hash(req.body.password, 10)
-    .then(hash => User.create({
-      name: req.body.name,
-      avatar: req.body.avatar,
-      email: req.body.email,
-      password: hash,
-    }))
-  })
-  .then((user) => res.send(user))
-  .catch((err) => {
-    console.error(err);
-    if (err.name === 'ValidationError') {
-      return res.status(invalidDataError).send({message: "Invalid data"});
-    } if (err.name === '11000') {
-      return res.status(invalidDataError).send({message: "User or Password already exist"});
-    }
-    return res.status(serverError).send({message: "An error has occurred on the server"});
-  })
+    .then((user) => {
+      if (user) {
+        return res.status(invalidDataError).send({ message: "User already exists" });
+      }
+      return bcrypt.hash(password, 10);
+    })
+    .then((hash) => User.create({ name, avatar, email, password: hash }))
+    .then((user) => res.send({ id: user._id, name: user.name, avatar: user.avatar, email: user.email })) // Send only needed fields
+    .catch((err) => {
+      console.error(err);
+      if (err.name === 'ValidationError') {
+        return res.status(invalidDataError).send({ message: "Invalid data" });
+      } if (err.code === 11000) {
+        return res.status(invalidDataError).send({ message: "User already exists" });
+      }
+      return res.status(serverError).send({ message: "An error has occurred on the server" });
+    });
 };
 
 const login = (req, res) => {
@@ -68,7 +63,7 @@ const login = (req, res) => {
     res.send({token});
   })
   .catch((err) => {
-    console.err(err)
+    console.error(err)
     if (err.name === 'ValidationError') {
       return res.status(invalidDataError).send({message: "Invalid data"});
     } if (err.name === '11000') {
@@ -81,42 +76,42 @@ const login = (req, res) => {
 const getCurrentUser = (req, res) => {
   const id = req.user._id;
   User.findById(id)
-  .then((user) => {
-    if (user) {
-      return res.send({ user });
-    }
-    return res.status(notFoundError);
-  })
-  .catch((err) => {
-    console.err(err);
-    if (err.name === notFoundError) {
-      return res.send({message: "User not found"})
-    }
-    return res.status(serverError).send({message: "An error has occurred on the server"});
-  })
-}
+    .then((user) => {
+      if (!user) {
+        return res.status(notFoundError).send({ message: "User not found" });
+      }
+      return res.send({ id: user._id, name: user.name, avatar: user.avatar, email: user.email });
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.name === 'DocumentNotFoundError') {
+        return res.status(notFoundError).send({ message: "User not found" });
+      }
+      return res.status(serverError).send({ message: "An error has occurred on the server" });
+    });
+};
 
 const updateProfile = (req, res) => {
   const { _id } = req.user;
   const { name, avatar } = req.body;
 
   User.findByIdAndUpdate(_id, { name, avatar }, { runValidators: true, new: true })
-  .then((user) => {
-    if (user) {
-      res.send({ user })
-    }
-    return res.status(notFoundError).send({message: "Not found"});
-  })
-  .catch((err) => {
-    console.errorcla(err);
-    if (err.name === 'DocumentNotFoundError') {
-      return res.status(notFoundError).send({message: err.message});
-    }
-    if (err.name === "ValidationError") {
-      return res.status(invalidDataError).send({message: "Invalid data"});
-    }
-    return res.status(serverError).send({message: "An error has occurred on the server"});
-  })
-}
+    .then((user) => {
+      if (!user) {
+        return res.status(notFoundError).send({ message: "User not found" });
+      }
+      return res.send({ id: user._id, name: user.name, avatar: user.avatar });
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.name === 'DocumentNotFoundError') {
+        return res.status(notFoundError).send({ message: "User not found" });
+      }
+      if (err.name === "ValidationError") {
+        return res.status(invalidDataError).send({ message: "Invalid data" });
+      }
+      return res.status(serverError).send({ message: "An error has occurred on the server" });
+    });
+};
 
 module.exports = { getUsers, getUser, createUser, login, getCurrentUser, updateProfile };
