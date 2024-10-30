@@ -1,10 +1,10 @@
 const router = require('express').Router();
+const userRouter = require('./users');
+const itemRouter = require('./clothingitems');
 const { notFoundError } = require("../utils/errors")
 const { login, createUser } = require('../controllers/users');
 
-const userRouter = require('./users');
-const itemRouter = require('./clothingitems');
-
+console.log(userRouter);
 router.use('/users', userRouter);
 router.use('/items', itemRouter);
 router.post('/signin', login);

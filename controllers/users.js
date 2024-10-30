@@ -108,7 +108,7 @@ const updateProfile = (req, res) => {
     return res.status(notFoundError).send({message: "Not found"});
   })
   .catch((err) => {
-    console.err(err);
+    console.errorcla(err);
     if (err.name === 'DocumentNotFoundError') {
       return res.status(notFoundError).send({message: err.message});
     }
