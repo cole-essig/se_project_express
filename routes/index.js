@@ -4,7 +4,6 @@ const itemRouter = require('./clothingitems');
 const { notFoundError } = require("../utils/errors")
 const { login, createUser } = require('../controllers/users');
 
-console.log(userRouter);
 router.use('/users', userRouter);
 router.use('/items', itemRouter);
 router.post('/signin', login);
