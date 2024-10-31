@@ -2,7 +2,6 @@ const Clothingitem = require('../models/clothingitem');
 const { invalidDataError,
   notFoundError,
   serverError,
-  unauthorizedError,
   forbiddenError
 } = require("../utils/errors")
 
