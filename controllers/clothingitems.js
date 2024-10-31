@@ -3,6 +3,7 @@ const { invalidDataError,
   notFoundError,
   serverError,
   unauthorizedError,
+  forbiddenError
 } = require("../utils/errors")
 
 const getItems = (req, res) => {
@@ -34,12 +35,11 @@ const deleteItem = (req, res) => {
   Clothingitem.findById(itemId)
   .orFail()
   .then((item) => {
-    if (user === item.owner) {
-      return Clothingitem.findByIdAndDelete(item._id)
-      .orFail()
-      .then((deletedItem) => res.send(deletedItem))
-    }
-    return res.status(unauthorizedError).send({message: "Item cannot be deleted"});
+    if (user !== item.owner.toString()) {
+    return res.status(forbiddenError).send({message: "Cannot delete other users item"});
+  }
+  return Clothingitem.findByIdAndDelete(item._id)
+      .then(() => res.send({message: "Item deleted"}));
   })
   .catch((err) => {
     console.error(err);
