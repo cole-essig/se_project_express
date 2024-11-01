@@ -7,9 +7,9 @@ const JWT_SECRET = require('../utils/config')
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
     bcrypt.hash(password, 10)
-    .then((hash) => {
-      return User.create({ name, avatar, email, password: hash })
-    })
+    .then(hash =>
+      User.create({ name, avatar, email, password: hash })
+    )
     .then((user) => res.status(201).send({ id: user._id, name: user.name, avatar: user.avatar, email: user.email })) // Send only needed fields
     .catch((err) => {
       console.error(err);
@@ -26,15 +26,15 @@ const login = (req, res) => {
   const {email, password} = req.body;
 
   if (!email || !password) {
-    return res.status(BAD_REQUEST).send({message: "the password and email are required"});
+    return res.status(invalidDataError).send({message: "The password and email are required"});
   }
 
-  User.findUserByCredentials(email, password)
+  return User.findUserByCredentials(email, password)
   .then((user) => {
     const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
       expiresIn: "7d",
     });
-    res.send({token});
+    return res.send({token});
   })
   .catch((err) => {
     console.error(err)
@@ -80,4 +80,4 @@ const updateProfile = (req, res) => {
     });
 };
 
-module.exports = { getUsers, getUser, createUser, login, getCurrentUser, updateProfile };
+module.exports = { createUser, login, getCurrentUser, updateProfile };
