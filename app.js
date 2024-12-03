@@ -15,4 +15,6 @@ app.use(express.json());
 app.use(cors());
 app.use("/", mainRouter)
 
-app.listen(PORT, () => {})
+if (process.env.NODE_ENV !== "test") {
+  app.listen(PORT, () => {});
+}
