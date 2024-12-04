@@ -1,7 +1,12 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user')
-const { invalidDataError, notFoundError, serverError, conflictError, unauthorizedError } = require("../utils/errors");
+
+const { BadRequestError } = require("../errors/BadRequestError");
+const { UnauthorizedError } = require("../errors/UnauthorizedError");
+const { NotFoundError } = require("../errors/NotFoundError");
+const { ConflictError } = require("../errors/ConflictError");
+
 const JWT_SECRET = require('../utils/config')
 
 const createUser = (req, res) => {
@@ -12,13 +17,13 @@ const createUser = (req, res) => {
     )
     .then((user) => res.status(201).send({ id: user._id, name: user.name, avatar: user.avatar, email: user.email }))
     .catch((err) => {
-      console.error(err);
-      if (err.name === 'ValidationError') {
-        return res.status(invalidDataError).send({ message: "Invalid data" });
-      } if (err.code === 11000) {
-        return res.status(conflictError).send({ message: "User already exists" });
+      if (err.name === "ValidationError") {
+        next(new BadRequestError("Invalid user data"));
+      } else if (err.code === 11000) {
+        next(new ConflictError("User with this email already exists"));
+      } else {
+        next(err);
       }
-      return res.status(serverError).send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -37,11 +42,13 @@ const login = (req, res) => {
     return res.send({ token, user });
   })
   .catch((err) => {
-    console.error(err)
-    if (err.message === 'Incorrect email or password') {
-      return res.status(unauthorizedError).send({message: "Invalid data"});
+    if (err.name === "UnauthorizedError") {
+      next(new UnauthorizedError("Incorrect email or password"));
+    } else if (err.name === "ValidationError") {
+      next(new BadRequestError("Invalid input data"));
+    } else {
+      next(err);
     }
-    return res.status(serverError).send({message: "An error has occurred on the server"});
   })
 }
 
@@ -55,8 +62,11 @@ const getCurrentUser = (req, res) => {
       return res.send({ id: user._id, name: user.name, avatar: user.avatar, email: user.email });
     })
     .catch((err) => {
-      console.error(err);
-      return res.status(serverError).send({ message: "An error has occurred on the server" });
+      if (err.name === "CastError") {
+        next(new BadRequestError("The id string is in an invalid format"));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -74,9 +84,12 @@ const updateProfile = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(invalidDataError).send({ message: "Invalid data" });
+        next(new BadRequestError("Invalid input data"));
+      } else if (err.name === "CastError") {
+        next(new BadRequestError("Invalid user ID format"));
+      } else {
+        next(err);
       }
-      return res.status(serverError).send({ message: "An error has occurred on the server" });
     });
 };
 
