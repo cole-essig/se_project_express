@@ -1,11 +1,12 @@
 const express = require("express");
+require('dotenv').config();
 const mongoose = require("mongoose");
 const cors = require('cors');
 const mainRouter = require('./routes/index');
 const errorHandler = require('./middlewares/error-handler')
 const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-require('dotenv').config();
+
 
 
 mongoose.connect('mongodb://127.0.0.1:27017/wtwr_db')
@@ -21,7 +22,7 @@ app.use(requestLogger);
 app.use("/", mainRouter);
 app.use(errorLogger);
 app.use(errors());
-app.use(errorHandler);
+app.use("/", errorHandler);
 
 if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, () => {});
