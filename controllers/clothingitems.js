@@ -76,7 +76,9 @@ const deleteLike = (req, res) => {
     { $pull: { likes: req.user._id } }, // remove _id from the array
     { new: true },
   )
-  .orFail()
+  .orFail(() => {
+    throw new NotFoundError("Item ID not found");
+  })
   .then((item) => res.send(item))
   .catch((err) => {
     console.error(err);

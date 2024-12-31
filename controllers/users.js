@@ -31,7 +31,7 @@ const login = (req, res) => {
   const {email, password} = req.body;
 
   if (!email || !password) {
-    return res.status(invalidDataError).send({message: "The password and email are required"});
+    throw new BadRequestError("Email or password not valid");
   }
 
   return User.findUserByCredentials(email, password)
@@ -57,7 +57,7 @@ const getCurrentUser = (req, res) => {
   User.findById(id)
     .then((user) => {
       if (!user) {
-        return res.status(notFoundError).send({ message: "User not found" });
+        throw new NotFoundError("User not found");
       }
       return res.send({ id: user._id, name: user.name, avatar: user.avatar, email: user.email });
     })
@@ -77,7 +77,7 @@ const updateProfile = (req, res) => {
   User.findByIdAndUpdate(_id, { name, avatar }, { runValidators: true, new: true })
     .then((user) => {
       if (!user) {
-        return res.status(notFoundError).send({ message: "User not found" });
+        throw new NotFoundError("User not found");
       }
       return res.send({ id: user._id, name: user.name, avatar: user.avatar });
     })
