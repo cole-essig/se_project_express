@@ -22,8 +22,8 @@ module.exports = {
     sourceType: "module",
   },
   rules: {
-    'no-console': ["error", {allow: ['error'] }],
+    'no-console': ["error", {allow: ['error', 'log'] }],
     'no-underscore-dangle': ["error", {allow: ['_id'] }],
-    "no-unused-vars": ["error", { "argsIgnorePattern": "next" }]
+    "no-unused-vars": ["error", { "argsIgnorePattern": "next|req|res|request" }]
   },
 };

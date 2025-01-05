@@ -39,7 +39,7 @@ const login = (req, res, next) => {
     const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
       expiresIn: "7d",
     });
-    return res.send({ token, user });
+    return res.send({ token });
   })
   .catch((err) => {
     if (err.name === "UnauthorizedError") {
